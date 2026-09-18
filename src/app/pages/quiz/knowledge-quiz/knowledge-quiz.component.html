@@ -1,0 +1,17 @@
+<main class="game-page"><app-header></app-header><app-side-menu></app-side-menu>
+  <section class="game-shell">
+    <a routerLink="/quiz" class="back">← {{ languageService.language === 'en' ? 'Choose another game' : '別のゲームを選ぶ' }}</a>
+    <div class="game-heading"><div><p class="eyebrow">{{ languageService.language === 'en' ? 'KNOWLEDGE QUIZ' : '知識クイズ' }}</p><h1>{{ languageService.language === 'en' ? 'Pokédex number challenge' : '図鑑番号チャレンジ' }}</h1></div><strong>{{ score }} {{ languageService.language === 'en' ? 'pts' : '点' }}</strong></div>
+    <div class="progress"><span [style.width.%]="progress"></span></div>
+    <p class="question-count">{{ languageService.language === 'en' ? 'Question' : '問題' }} {{ question }} / {{ total }}</p>
+    <section class="game-card" *ngIf="!loading && !error && pokemon">
+      <img class="pokemon-image" [src]="image(pokemon)" [alt]="name(pokemon)">
+      <h2>{{ languageService.language === 'en' ? 'Which Pokémon is National Pokédex #' : '全国図鑑番号 #' }}{{ pokemon.id }}{{ languageService.language === 'en' ? '?' : 'のポケモンは？' }}</h2>
+      <div class="answers"><button *ngFor="let option of options" type="button" [class.correct]="locked && option.id === pokemon.id" [class.wrong]="locked && selected?.id === option.id && option.id !== pokemon.id" (click)="answer(option)">{{ name(option) }}</button></div>
+      <p *ngIf="locked" class="feedback" [class.success]="selected?.id === pokemon.id">{{ selected?.id === pokemon.id ? (languageService.language === 'en' ? 'Correct! Great knowledge.' : '正解です！') : (languageService.language === 'en' ? 'The answer was ' + name(pokemon) + '.' : '正解は' + name(pokemon) + 'です。') }}</p>
+      <button *ngIf="locked" class="primary" type="button" (click)="next()">{{ question === total ? (languageService.language === 'en' ? 'See results' : '結果を見る') : (languageService.language === 'en' ? 'Next question' : '次の問題') }} →</button>
+    </section>
+    <p *ngIf="loading" class="status">{{ languageService.language === 'en' ? 'Loading Pokémon...' : 'ポケモンを読み込んでいます…' }}</p><p *ngIf="error" class="status error">{{ languageService.language === 'en' ? error : 'ポケモン情報を読み込めませんでした。' }} <button type="button" (click)="loadQuestion()">{{ languageService.language === 'en' ? 'Retry' : '再試行' }}</button></p>
+  </section>
+<app-footer></app-footer>
+</main>

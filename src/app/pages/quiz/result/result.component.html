@@ -1,0 +1,59 @@
+<main class="result-page">
+  <app-header></app-header>
+  <app-side-menu></app-side-menu>
+
+  <section class="result-shell" *ngIf="result">
+    <p class="eyebrow">
+      {{ languageService.language === "en" ? "GAME COMPLETE" : "ゲーム終了" }}
+    </p>
+    <div class="result-mark" aria-hidden="true">★</div>
+    <h1>{{ gamesLabel(result.gameMode) }}</h1>
+    <p class="score">
+      {{ result.score }}
+      <small>{{ languageService.language === "en" ? "points" : "ポイント" }}</small>
+    </p>
+    <p class="message">
+      {{ languageService.language === "en" ? "Great run, Trainer!" : "おつかれさまでした！" }}
+    </p>
+    <p *ngIf="saveFailed" class="save-warning" role="alert">
+      {{
+        languageService.language === "en"
+          ? "This result could not be saved. Please check your connection and try again."
+          : "結果を保存できませんでした。接続を確認してください。"
+      }}
+    </p>
+
+    <div class="stats">
+      <div>
+        <b>{{ result.correctAnswers }}</b>
+        <span>{{ languageService.language === "en" ? "Correct" : "正解" }}</span>
+      </div>
+      <div>
+        <b>{{ result.wrongAnswers }}</b>
+        <span>{{ languageService.language === "en" ? "Wrong" : "不正解" }}</span>
+      </div>
+      <div>
+        <b>{{ result.accuracy }}%</b>
+        <span>{{ languageService.language === "en" ? "Accuracy" : "正解率" }}</span>
+      </div>
+      <div>
+        <b>{{ result.bestStreak }}</b>
+        <span>{{ languageService.language === "en" ? "Best streak" : "最高連続正解" }}</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" type="button" (click)="playAgain()">
+        {{ languageService.language === "en" ? "Play again" : "もう一度プレイ" }}
+      </button>
+      <button class="secondary" type="button" routerLink="/quiz">
+        {{ languageService.language === "en" ? "Choose another game" : "別のゲームを選ぶ" }}
+      </button>
+      <button class="secondary" type="button" routerLink="/history">
+        {{ languageService.language === "en" ? "View history" : "履歴を見る" }}
+      </button>
+    </div>
+  </section>
+
+  <app-footer></app-footer>
+</main>

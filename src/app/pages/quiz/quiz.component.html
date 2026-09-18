@@ -1,0 +1,330 @@
+﻿<main class="quiz-page">
+  <app-header></app-header>
+  <app-side-menu></app-side-menu>
+  <div class="quiz-shell">
+    <header class="quiz-topbar">
+      <a
+        class="back-link"
+        routerLink="/home"
+        [attr.aria-label]="
+          languageService.language === 'en' ? 'Return to setup' : ''
+        "
+      >
+        <span aria-hidden="true"></span>
+        {{ languageService.language === "en" ? "Setup" : "" }}
+      </a>
+      <!-- <div class="quiz-brand"><span></span> Pokédex Quiz</div> -->
+      <div class="topbar-actions">
+        <div class="topbar-score">
+          <span>{{
+            languageService.language === "en" ? "Score" : "スコア"
+          }}</span>
+          <strong>{{ score }}</strong>
+        </div>
+      </div>
+    </header>
+
+    <div class="quiz-progress">
+      <div class="progress-copy">
+        <span
+          >{{ languageService.language === "en" ? "Question" : "問題" }}
+          {{ questionNumber }} <b>/ {{ questionCount }}</b></span
+        >
+        <span>{{
+          languageService.language === "en"
+            ? (difficulty | titlecase) + " mode"
+            : (difficulty === "easy"
+                ? "かんたん"
+                : difficulty === "normal"
+                  ? "ふつう"
+                  : "むずかしい") + "モード"
+        }}</span>
+      </div>
+      <div class="progress-track">
+        <span [style.width.%]="progressPercent"></span>
+      </div>
+    </div>
+
+    <div
+      class="quiz-stats"
+      [attr.aria-label]="
+        languageService.language === 'en'
+          ? 'Current quiz statistics'
+          : '現在のクイズ情報'
+      "
+    >
+      <span
+        ><i class="stat-dot stat-dot--purple"></i>{{ streak }}
+        {{ languageService.language === "en" ? "streak" : "連続正解" }}</span
+      >
+      <span
+        ><i class="stat-dot stat-dot--yellow"></i>{{ correctAnswers }}
+        {{ languageService.language === "en" ? "correct" : "正解" }}</span
+      >
+      <span
+        ><i class="stat-dot stat-dot--pink"></i
+        >{{ languageService.language === "en" ? "Best" : "ベスト" }}
+        {{ bestScore }}</span
+      >
+    </div>
+
+    <section class="quiz-card" aria-labelledby="question-title">
+      <div *ngIf="loading" class="status-message" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        {{
+          languageService.language === "en"
+            ? "Finding your next Pokémon…"
+            : "次のポケモンを探しています…"
+        }}
+      </div>
+
+      <div
+        *ngIf="errorMessage && !loading"
+        class="status-message error"
+        role="alert"
+      >
+        <p>
+          {{
+            languageService.language === "en"
+              ? "We could not load Pokémon data. Please try again."
+              : "ポケモンの情報を読み込めませんでした。もう一度お試しください。"
+          }}
+        </p>
+        <button class="primary-button" type="button" (click)="loadQuestion()">
+          {{ languageService.language === "en" ? "Try again" : "もう一度試す" }}
+          <span aria-hidden="true">↗</span>
+        </button>
+      </div>
+
+      <div *ngIf="quizComplete && !loading" class="result">
+        <div class="result__badge">✦</div>
+        <p class="eyebrow">
+          {{
+            languageService.language === "en" ? "QUIZ COMPLETE" : "クイズ終了"
+          }}
+        </p>
+        <h1>
+          {{
+            languageService.language === "en"
+              ? "Great run, Trainer!"
+              : "おつかれさまでした！"
+          }}
+        </h1>
+        <p class="result__score">
+          {{ score }}
+          <small>{{
+            languageService.language === "en" ? "points" : "ポイント"
+          }}</small>
+        </p>
+        <div class="result__stats">
+          <div>
+            <strong>{{ correctAnswers }}/{{ questionCount }}</strong
+            ><span>{{
+              languageService.language === "en" ? "Correct" : "正解数"
+            }}</span>
+          </div>
+          <div>
+            <strong>{{ accuracyPercent }}%</strong
+            ><span>{{
+              languageService.language === "en" ? "Accuracy" : "正解率"
+            }}</span>
+          </div>
+          <div>
+            <strong>{{ bestStreak }}</strong
+            ><span>{{
+              languageService.language === "en" ? "Best streak" : "最高連続正解"
+            }}</span>
+          </div>
+        </div>
+        <button class="primary-button" type="button" (click)="restartGame()">
+          {{
+            languageService.language === "en" ? "Play again" : "もう一度プレイ"
+          }}
+          <span aria-hidden="true">↗</span>
+        </button>
+      </div>
+
+      <ng-container
+        *ngIf="pokemon && !loading && !quizComplete && !errorMessage"
+      >
+        <div class="timer" [class.timer--urgent]="timeLeft <= 5">
+          <span class="timer__icon">◷</span>
+          <span>{{
+            languageService.language === "en"
+              ? timeLeft + " seconds left"
+              : "残り " + timeLeft + " 秒"
+          }}</span>
+          <div class="timer__track">
+            <span [style.width.%]="timerPercent"></span>
+          </div>
+        </div>
+
+        <div class="question">
+          <div class="pokemon-frame">
+            <div class="pokemon-frame__shine"></div>
+            <img
+              *ngIf="pokemon.sprites.front_default"
+              [src]="pokemon.sprites.front_default"
+              [alt]="
+                languageService.language === 'en'
+                  ? formatName(pokemon.name)
+                  : pokemonName
+              "
+            />
+            <span class="pokemon-frame__number"
+              >#{{ pokemon.id | number: "3.0" }}</span
+            >
+          </div>
+          <p class="eyebrow">
+            {{
+              languageService.language === "en" ? "TYPE GUESS" : "タイプ当て"
+            }}
+          </p>
+          <h1 id="question-title">
+            {{
+              languageService.language === "en"
+                ? "What type is " + formatName(pokemon.name) + "?"
+                : pokemonName + "は何タイプ？"
+            }}
+          </h1>
+          <p class="question__hint">
+            {{
+              languageService.language === "en"
+                ? "Choose the Pokémon's primary type before time runs out."
+                : "時間切れになる前に、ポケモンのタイプを選んでください。"
+            }}
+          </p>
+        </div>
+
+        <form
+          class="answers"
+          [formGroup]="quizForm"
+          (ngSubmit)="submitAnswer()"
+        >
+          <fieldset>
+            <legend class="sr-only">
+              {{
+                languageService.language === "en"
+                  ? "Choose an answer"
+                  : "答えを選択"
+              }}
+            </legend>
+            <label
+              *ngFor="let option of answerOptions; let i = index"
+              class="answer"
+              [class.answer--selected]="isSelected(option) && !submitted"
+              [class.answer--correct]="submitted && option === correctType"
+              [class.answer--incorrect]="
+                submitted &&
+                option !== correctType &&
+                quizForm.value.answer === option
+              "
+            >
+              <input
+                type="radio"
+                formControlName="answer"
+                [value]="option"
+                [disabled]="submitted"
+              />
+              <span class="answer__key">{{ ["A", "B", "C", "D"][i] }}</span>
+              <span class="answer__name">{{
+                languageService.language === "ja"
+                  ? formatTypeName(option)
+                  : (option | titlecase)
+              }}</span>
+              <span class="answer__mark" aria-hidden="true">
+                {{
+                  submitted && option === correctType
+                    ? "✓"
+                    : submitted && quizForm.value.answer === option
+                      ? "×"
+                      : "→"
+                }}
+              </span>
+            </label>
+          </fieldset>
+
+          <p
+            *ngIf="submitted"
+            class="feedback"
+            [class.feedback--success]="answerState === 'correct'"
+          >
+            <strong>{{
+              answerState === "correct"
+                ? languageService.language === "en"
+                  ? "Correct!"
+                  : "正解です！"
+                : timeExpired
+                  ? languageService.language === "en"
+                    ? "Time is up!"
+                    : "時間切れです！"
+                  : languageService.language === "en"
+                    ? "Not quite!"
+                    : "残念！"
+            }}</strong>
+            {{
+              answerState === "correct"
+                ? "+" +
+                  (100 + timeLeft * 5) +
+                  (languageService.language === "en"
+                    ? " points"
+                    : "ポイント獲得")
+                : languageService.language === "en"
+                  ? "The answer was " + (correctType | titlecase) + "."
+                  : "正解は「" + formatTypeName(correctType) + "」でした。"
+            }}
+          </p>
+
+          <button
+            *ngIf="!submitted"
+            class="primary-button"
+            type="submit"
+            [disabled]="!quizForm.value.answer"
+          >
+            {{
+              languageService.language === "en"
+                ? "Lock in answer"
+                : "この答えで決定"
+            }}
+            <span aria-hidden="true">↗</span>
+          </button>
+          <button
+            *ngIf="submitted"
+            class="primary-button"
+            type="button"
+            (click)="nextQuestion()"
+          >
+            {{
+              questionNumber === questionCount
+                ? languageService.language === "en"
+                  ? "See results"
+                  : "結果を見る"
+                : languageService.language === "en"
+                  ? "Next Pokémon"
+                  : "次のポケモンへ"
+            }}
+            <span aria-hidden="true">→</span>
+          </button>
+        </form>
+      </ng-container>
+    </section>
+
+    <p *ngIf="resultSaveFailed" class="feedback" role="alert">
+      {{
+        languageService.language === "en"
+          ? "This result could not be saved. Please check your connection."
+          : "結果を保存できませんでした。接続を確認してください。"
+      }}
+    </p>
+
+    <p class="api-note">
+      <span>●</span>
+      {{
+        languageService.language === "en"
+          ? "Live Pokémon data from PokéAPI"
+          : "PokéAPIの最新データを使用中"
+      }}
+    </p>
+  </div>
+  <app-footer></app-footer>
+</main>

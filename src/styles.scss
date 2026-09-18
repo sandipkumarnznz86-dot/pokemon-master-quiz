@@ -1,0 +1,35 @@
+:root {
+  --pq-primary: #3b4cca;
+  --pq-purple: #6c5ce7;
+  --pq-yellow: #ffcb05;
+  --pq-success: #22c55e;
+  --pq-error: #ef4444;
+  --pq-background: #f5f7fb;
+  --pq-card: #ffffff;
+  --pq-navy: #1e293b;
+  --pq-muted: #64748b;
+  --pq-border: #e2e8f0;
+  --pq-shadow: 0 18px 45px rgba(30, 41, 59, 0.08);
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--pq-background);
+  color: var(--pq-navy);
+  font-family: Inter, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+    Meiryo, Roboto, "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}

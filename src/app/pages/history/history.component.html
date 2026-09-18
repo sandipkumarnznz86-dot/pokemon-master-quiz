@@ -1,0 +1,59 @@
+<main class="page-shell">
+  <app-header></app-header>
+  <app-side-menu></app-side-menu>
+
+  <section class="content-card">
+    <p class="eyebrow">QUIZ ACTIVITY</p>
+    <h1>{{ languageService.language === "en" ? "Quiz History" : "クイズ履歴" }}</h1>
+    <p class="intro">
+      {{ languageService.language === "en" ? "Your previous quiz results." : "これまでのクイズ結果です。" }}
+    </p>
+
+    <div class="history-filters" role="group" [attr.aria-label]="languageService.language === 'en' ? 'Filter quiz history' : 'クイズ履歴を絞り込む'">
+      <button
+        type="button"
+        [class.history-filter--active]="selectedMode === 'all'"
+        (click)="selectedMode = 'all'"
+      >
+        {{ filterLabel("all") }}
+      </button>
+      <button
+        *ngFor="let mode of gameModes"
+        type="button"
+        [class.history-filter--active]="selectedMode === mode"
+        (click)="selectedMode = mode"
+      >
+        {{ filterLabel(mode) }}
+      </button>
+    </div>
+
+    <p *ngIf="loading" class="state-message">
+      {{ languageService.language === "en" ? "Loading history…" : "履歴を読み込んでいます…" }}
+    </p>
+    <p *ngIf="error" class="state-message state-message--error">
+      {{ languageService.language === "en" ? "Could not load quiz history." : "クイズ履歴を読み込めませんでした。" }}
+    </p>
+    <p *ngIf="!loading && !error && !results.length" class="state-message">
+      {{ languageService.language === "en" ? "No quiz results yet. Start playing!" : "まだ結果がありません。クイズを始めましょう！" }}
+    </p>
+    <p *ngIf="!loading && !error && results.length && !filteredResults().length" class="state-message">
+      {{ languageService.language === "en" ? "No results for this game yet." : "このゲームの結果はまだありません。" }}
+    </p>
+
+    <div *ngIf="!loading && !error && filteredResults().length" class="history-list">
+      <article *ngFor="let result of filteredResults()" class="history-item">
+        <div>
+          <span class="history-item__game">{{ gameLabel(gameMode(result)) }}</span>
+          <strong>{{ result.score }} {{ languageService.language === "en" ? "points" : "ポイント" }}</strong>
+          <small>{{ result.createdAt ? (result.createdAt | date: "medium") : "—" }}</small>
+        </div>
+        <div class="history-item__stats">
+          <span>{{ result.correctAnswers }}/{{ result.questionCount }} {{ languageService.language === "en" ? "correct" : "正解" }}</span>
+          <span>{{ result.accuracy ?? accuracy(result) }}%</span>
+          <span>{{ languageService.language === "en" ? "Difficulty: " : "難易度: " }}{{ result.difficulty | titlecase }}</span>
+        </div>
+      </article>
+    </div>
+  </section>
+  <app-footer></app-footer>
+</main>

@@ -1,0 +1,183 @@
+﻿<main class="login-page">
+  <div class="login-header">
+    <app-header></app-header>
+  </div>
+  <app-side-menu></app-side-menu>
+  <section class="login-panel" aria-labelledby="login-title">
+    <a class="login-brand" routerLink="/">POKÉ<span>QUIZ</span></a>
+
+    <p class="eyebrow">
+      {{
+        languageService.language === "en"
+          ? (isRegisterMode ? "CREATE YOUR PROFILE" : (loginStep === "password" ? "ENTER YOUR PASSWORD" : "WELCOME BACK, TRAINER"))
+          : (isForgotMode ? "パスワードを再設定" : (isRegisterMode ? "プロフィールを作成" : "おかえりなさい、トレーナー"))
+      }}
+    </p>
+    <h1 id="login-title">
+      {{
+        languageService.language === "en"
+          ? (isForgotMode ? "Reset your password" : (isRegisterMode ? "Create an account" : "Sign in to play"))
+          : (isForgotMode ? "パスワードを再設定" : (isRegisterMode ? "アカウントを作成" : "ログインして遊ぶ"))
+      }}
+    </h1>
+    <p class="login-intro">
+      {{
+        languageService.language === "en"
+          ? (isForgotMode
+            ? "Enter your email and we will send you a password reset link."
+            : isRegisterMode
+            ? "Create your profile to save your quiz access."
+            : "Sign in with your account to continue to the quiz.")
+          : (isForgotMode
+            ? "メールアドレスを入力すると、パスワード再設定リンクを送信します。"
+            : isRegisterMode
+            ? "プロフィールを作成してクイズの記録を保存しましょう。"
+            : "アカウントにログインしてクイズを続けましょう。")
+      }}
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label *ngIf="isRegisterMode && !isForgotMode">
+        <span>{{ languageService.language === "en" ? "Full name" : "氏名" }}</span>
+        <input
+          formControlName="name"
+          type="text"
+          autocomplete="name"
+          [placeholder]="languageService.language === 'en' ? 'Ash Ketchum' : 'サトシ'"
+        />
+        <small *ngIf="form.controls.name.touched && form.controls.name.invalid">
+          {{ languageService.language === "en" ? "Enter your full name." : "氏名を入力してください。" }}
+        </small>
+      </label>
+
+      <label *ngIf="isRegisterMode && !isForgotMode">
+        <span>{{ languageService.language === "en" ? "Age" : "年齢" }}</span>
+        <input formControlName="age" type="number" min="1" max="120" autocomplete="off" placeholder="22" />
+        <small *ngIf="form.controls.age.touched && form.controls.age.invalid">
+          {{ languageService.language === "en" ? "Enter an age between 1 and 120." : "1歳から120歳まで入力してください。" }}
+        </small>
+      </label>
+
+      <label *ngIf="isRegisterMode && !isForgotMode">
+        <span>{{ languageService.language === "en" ? "Profile photo (optional)" : "プロフィール写真（任意）" }}</span>
+        <input type="file" accept="image/*" (change)="onPhotoSelected($event)" />
+        <img
+          *ngIf="photoPreview"
+          class="photo-preview"
+          [src]="photoPreview"
+          alt="Profile preview"
+        />
+      </label>
+
+      <label>
+        <span>{{ languageService.language === "en" ? "Email" : "メールアドレス" }}</span>
+        <input
+          formControlName="email"
+          type="email"
+          autocomplete="email"
+          [readonly]="!isRegisterMode && !isForgotMode && loginStep === 'password'"
+          placeholder="trainer@example.com"
+        />
+        <small
+          *ngIf="form.controls.email.touched && form.controls.email.invalid"
+        >
+          {{ languageService.language === "en" ? "Enter a valid email address." : "有効なメールアドレスを入力してください。" }}
+        </small>
+      </label>
+
+      <label *ngIf="isRegisterMode || isForgotMode || loginStep === 'password'">
+        <span>{{ languageService.language === "en" ? "Password" : "パスワード" }}</span>
+        <input
+          formControlName="password"
+          type="password"
+          [attr.autocomplete]="isRegisterMode ? 'new-password' : 'current-password'"
+          placeholder="At least 6 characters"
+        />
+        <small
+          *ngIf="
+            form.controls.password.touched && form.controls.password.invalid
+          "
+        >
+          {{ languageService.language === "en" ? "Password must be at least 6 characters." : "パスワードは6文字以上で入力してください。" }}
+        </small>
+      </label>
+
+      <label *ngIf="isRegisterMode && !isForgotMode">
+        <span>{{ languageService.language === "en" ? "Confirm password" : "パスワードを確認" }}</span>
+        <input
+          formControlName="confirmPassword"
+          type="password"
+          autocomplete="new-password"
+          placeholder="Re-enter your password"
+        />
+        <small
+          *ngIf="form.controls.confirmPassword.touched && form.controls.confirmPassword.invalid"
+        >
+          {{ languageService.language === "en" ? "Confirm your password." : "パスワードをもう一度入力してください。" }}
+        </small>
+        <small
+          *ngIf="
+            form.controls.confirmPassword.touched &&
+            form.controls.confirmPassword.valid &&
+            form.controls.password.value !== form.controls.confirmPassword.value
+          "
+        >
+          {{ languageService.language === "en" ? "Passwords do not match." : "パスワードが一致しません。" }}
+        </small>
+      </label>
+
+      <p *ngIf="errorMessage" class="form-error" role="alert">
+        {{ errorMessage }}
+      </p>
+      <p *ngIf="successMessage" class="form-success" role="status">
+        {{ successMessage }}
+      </p>
+
+      <button class="login-submit" type="submit" [disabled]="isSubmitting">
+        {{
+          isSubmitting
+            ? (languageService.language === "en" ? "Please wait..." : "お待ちください…")
+            : isForgotMode
+              ? (languageService.language === "en" ? "Send reset email" : "再設定メールを送信")
+              : isRegisterMode
+              ? (languageService.language === "en" ? "Create account" : "アカウントを作成")
+              : loginStep === "email"
+              ? (languageService.language === "en" ? "Continue" : "続ける")
+              : (languageService.language === "en" ? "Login" : "ログイン")
+        }}
+        <span aria-hidden="true"></span>
+      </button>
+    </form>
+
+    <button
+      *ngIf="!isRegisterMode && !isForgotMode && loginStep === 'password'"
+      class="mode-toggle"
+      type="button"
+      (click)="backToEmail()"
+    >
+      {{ languageService.language === "en" ? "Use a different email" : "別のメールアドレスを使う" }}
+    </button>
+
+    <button
+      *ngIf="!isRegisterMode && !isForgotMode && loginStep === 'password'"
+      class="forgot-link"
+      type="button"
+      (click)="showForgotPassword()"
+    >
+      {{ languageService.language === "en" ? "Forgot password?" : "パスワードを忘れましたか？" }}
+    </button>
+
+    <button *ngIf="isForgotMode" class="mode-toggle" type="button" (click)="backToLogin()">
+      {{ languageService.language === "en" ? "Back to login" : "ログインに戻る" }}
+    </button>
+
+    <button *ngIf="!isForgotMode" class="mode-toggle" type="button" (click)="toggleMode()">
+      {{
+        isRegisterMode
+          ? (languageService.language === "en" ? "Already have an account? Login" : "アカウントをお持ちですか？ログイン")
+          : (languageService.language === "en" ? "Need an account? Register" : "アカウントを作成する")
+      }}
+    </button>
+  </section>
+  <app-footer></app-footer>
+</main>

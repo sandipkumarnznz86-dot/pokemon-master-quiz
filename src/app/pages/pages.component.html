@@ -1,0 +1,78 @@
+<main class="home-page">
+  <app-side-menu></app-side-menu>
+  <app-header></app-header>
+
+  <section class="dashboard">
+    <header class="dashboard__intro">
+      <div>
+        <p class="eyebrow">{{ languageService.language === "en" ? "TRAINER DASHBOARD" : "トレーナーダッシュボード" }}</p>
+        <h1>{{ languageService.language === "en" ? "Welcome back," : "おかえりなさい、" }} <span>{{ (authService.user$ | async)?.name || "Trainer" }}</span></h1>
+        <p class="intro-copy">{{ languageService.language === "en" ? "Choose your challenge and keep your streak alive." : "チャレンジを選んで、連続正解を伸ばしましょう。" }}</p>
+      </div>
+    </header>
+
+    <section class="stats-grid" aria-label="Quiz statistics">
+      <article class="stat-card">
+        <span class="stat-card__icon stat-card__icon--yellow">★</span>
+        <div><small>{{ languageService.language === "en" ? "Best score" : "最高スコア" }}</small><strong>{{ summary?.bestScore ?? "—" }}</strong></div>
+      </article>
+      <article class="stat-card">
+        <span class="stat-card__icon stat-card__icon--blue">▣</span>
+        <div><small>{{ languageService.language === "en" ? "Games played" : "プレイ回数" }}</small><strong>{{ summary?.gamesPlayed ?? "—" }}</strong></div>
+      </article>
+      <article class="stat-card">
+        <span class="stat-card__icon stat-card__icon--purple">%</span>
+        <div><small>{{ languageService.language === "en" ? "Accuracy" : "正解率" }}</small><strong>{{ summary ? summary.accuracy + "%" : "—" }}</strong></div>
+      </article>
+      <article class="stat-card">
+        <span class="stat-card__icon stat-card__icon--green">↗</span>
+        <div><small>{{ languageService.language === "en" ? "Current streak" : "連続正解" }}</small><strong>{{ summary?.currentStreak ?? "—" }}</strong></div>
+      </article>
+    </section>
+
+    <section class="quiz-setup" aria-labelledby="setup-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">{{ languageService.language === "en" ? "READY TO PLAY?" : "準備はできましたか？" }}</p>
+          <h2 id="setup-title">{{ languageService.language === "en" ? "Set up your quiz" : "クイズを設定" }}</h2>
+        </div>
+        <span class="section-heading__mark">✦</span>
+      </div>
+
+      <fieldset class="option-group">
+        <legend>{{ languageService.language === "en" ? "Choose difficulty" : "難易度を選択" }}</legend>
+        <label *ngFor="let option of difficulties" class="difficulty-option" [class.difficulty-option--active]="difficulty === option.value">
+          <input type="radio" name="difficulty" [value]="option.value" [(ngModel)]="difficulty" />
+          <span class="difficulty-option__dot"></span>
+          <span class="difficulty-option__copy">
+            <strong>{{ languageService.language === "en" ? option.label : option.value === "easy" ? "かんたん" : option.value === "normal" ? "ふつう" : "むずかしい" }}</strong>
+            <small>{{ languageService.language === "en" ? option.description : option.value === "easy" ? "第1世代のポケモン" : option.value === "normal" ? "第1〜4世代のポケモン" : "全ポケモンから出題" }}</small>
+          </span>
+          <b>→</b>
+        </label>
+      </fieldset>
+
+      <label class="question-count">
+        <span><strong>{{ languageService.language === "en" ? "Questions" : "問題数" }}</strong><small>{{ languageService.language === "en" ? "How long should your run be?" : "何問プレイしますか？" }}</small></span>
+        <select [(ngModel)]="questionCount" [attr.aria-label]="languageService.language === 'en' ? 'Number of questions' : '問題数'">
+          <option *ngFor="let count of questionCounts" [ngValue]="count">{{ count }}</option>
+        </select>
+      </label>
+
+      <button class="start-button" type="button" (click)="startGame()">
+        <span>{{ languageService.language === "en" ? "Start quiz" : "クイズを始める" }}</span>
+        <span aria-hidden="true">↗</span>
+      </button>
+    </section>
+
+    <section *ngIf="summary?.recentResult as recent" class="recent-card">
+      <div>
+        <p class="eyebrow">{{ languageService.language === "en" ? "LATEST RESULT" : "最新の結果" }}</p>
+        <h2>{{ recent.score }} {{ languageService.language === "en" ? "points" : "ポイント" }}</h2>
+      </div>
+      <div><strong>{{ recent.correctAnswers }}/{{ recent.questionCount }}</strong><span>{{ languageService.language === "en" ? "correct answers" : "正解数" }}</span></div>
+      <div><strong>{{ summary?.accuracy }}%</strong><span>{{ languageService.language === "en" ? "overall accuracy" : "全体の正解率" }}</span></div>
+    </section>
+  </section>
+  <app-footer></app-footer>
+</main>

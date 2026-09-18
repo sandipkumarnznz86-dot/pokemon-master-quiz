@@ -1,0 +1,18 @@
+<main class="reset-page">
+  <app-header></app-header>
+  <section class="reset-card">
+    <a routerLink="/forgot-password" class="back-link">← Back</a>
+    <p class="eyebrow">VERIFY YOUR EMAIL</p>
+    <h1>Enter verification code</h1>
+    <p class="intro">We sent a 6-digit code to {{ resetService.maskedEmail }}. It expires in 10 minutes.</p>
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label for="code">Verification code</label>
+      <input id="code" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" formControlName="code" placeholder="000000" />
+      <small *ngIf="form.controls.code.touched && form.controls.code.invalid">Enter exactly 6 digits.</small>
+      <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+      <button type="submit" [disabled]="loading">{{ loading ? 'Verifying…' : 'Verify Code' }}</button>
+    </form>
+    <button class="text-button" type="button" [disabled]="loading || cooldown > 0" (click)="resend()">{{ cooldown ? 'Resend code in ' + cooldown + 's' : 'Resend Code' }}</button>
+  </section>
+  <app-footer></app-footer>
+</main>

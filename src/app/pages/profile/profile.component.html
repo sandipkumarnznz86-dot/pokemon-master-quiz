@@ -1,0 +1,65 @@
+<main class="page-shell">
+  <app-header></app-header>
+  <app-side-menu></app-side-menu>
+
+  <section class="profile-card" *ngIf="authService.user$ | async as user">
+    <ng-container *ngIf="!isEditing; else editForm">
+      <div class="profile-avatar">
+        <img *ngIf="user.photo" [src]="user.photo" [alt]="user.name" />
+        <span *ngIf="!user.photo">{{ getInitials(user.name) }}</span>
+      </div>
+      <p class="eyebrow">{{ languageService.language === "en" ? "YOUR TRAINER PROFILE" : "トレーナープロフィール" }}</p>
+      <h1>{{ user.name || (languageService.language === "en" ? "Profile incomplete" : "プロフィール未完成") }}</h1>
+      <p class="email">{{ user.email }}</p>
+      <div class="profile-stats">
+        <div><strong>{{ user.age === null ? "—" : user.age }}</strong><span>{{ languageService.language === "en" ? "Age" : "年齢" }}</span></div>
+        <div><strong>{{ user.rank }}</strong><span>{{ languageService.language === "en" ? "Rank" : "ランク" }}</span></div>
+        <div><strong>{{ user.rankPoints }}</strong><span>{{ languageService.language === "en" ? "Rank points" : "ランクポイント" }}</span></div>
+        <div><strong>{{ quizCount }}</strong><span>{{ languageService.language === "en" ? "Quizzes" : "クイズ数" }}</span></div>
+        <div><strong>{{ bestScore === null ? "—" : bestScore }}</strong><span>{{ languageService.language === "en" ? "Best score" : "最高スコア" }}</span></div>
+      </div>
+      <div class="rank-progress">
+        <div class="rank-progress-header">
+          <span>{{ languageService.language === "en" ? "Progress to next rank" : "次のランクまで" }}</span>
+          <span>{{ nextRank(user.rankPoints) }}</span>
+        </div>
+        <div class="rank-progress-bar">
+          <span [style.width.%]="rankProgress(user.rankPoints)"></span>
+        </div>
+      </div>
+      <button class="profile-action" type="button" (click)="beginEdit(user.name, user.age, user.photo)">
+        {{ languageService.language === "en" ? "Edit profile" : "プロフィールを編集" }}
+      </button>
+    </ng-container>
+
+    <ng-template #editForm>
+      <p *ngIf="profileError" class="profile-error" role="alert">{{ profileError }}</p>
+      <div class="profile-avatar">
+        <img *ngIf="editPhoto" [src]="editPhoto" alt="Profile preview" />
+        <span *ngIf="!editPhoto">{{ getInitials(editName || "Trainer") }}</span>
+      </div>
+      <p class="eyebrow">{{ languageService.language === "en" ? "EDIT YOUR PROFILE" : "プロフィールを編集" }}</p>
+      <label class="profile-field">
+        <span>{{ languageService.language === "en" ? "Full name" : "氏名" }}</span>
+        <input [(ngModel)]="editName" type="text" />
+      </label>
+      <label class="profile-field">
+        <span>{{ languageService.language === "en" ? "Age" : "年齢" }}</span>
+        <input [(ngModel)]="editAge" type="number" min="1" max="120" />
+      </label>
+      <label class="profile-field">
+        <span>{{ languageService.language === "en" ? "Profile photo" : "プロフィール写真" }}</span>
+        <input type="file" accept="image/*" (change)="onPhotoSelected($event)" />
+      </label>
+      <div class="profile-actions">
+        <button class="profile-action" type="button" [disabled]="isSaving" (click)="saveProfile()">
+          {{ isSaving ? (languageService.language === "en" ? "Saving..." : "保存中…") : (languageService.language === "en" ? "Save changes" : "変更を保存") }}
+        </button>
+        <button class="profile-cancel" type="button" (click)="isEditing = false">
+          {{ languageService.language === "en" ? "Cancel" : "キャンセル" }}
+        </button>
+      </div>
+    </ng-template>
+  </section>
+  <app-footer></app-footer>
+</main>

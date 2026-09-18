@@ -1,0 +1,39 @@
+<ng-container *ngIf="navigationService.isOpen$ | async">
+  <button
+    class="menu-overlay"
+    type="button"
+    aria-label="Close navigation menu"
+    (click)="close()"
+  ></button>
+
+  <aside class="side-menu" aria-label="Application navigation">
+    <div class="side-menu__header">
+      <span class="side-menu__title">POKÉ<b>QUIZ</b></span>
+      <button class="side-menu__close" type="button" aria-label="Close navigation menu" (click)="close()">×</button>
+    </div>
+
+    <nav class="side-menu__links">
+      <a routerLink="/home" routerLinkActive="side-menu__link--active" [routerLinkActiveOptions]="{ exact: true }" (click)="close()">
+        <span>⌂</span>
+        {{ languageService.language === "en" ? "Home" : "ホーム" }}
+      </a>
+      <a routerLink="/quiz" routerLinkActive="side-menu__link--active" (click)="close()">
+        <span>✦</span>
+        {{ languageService.language === "en" ? "Quiz" : "クイズ" }}
+      </a>
+      <a routerLink="/history" routerLinkActive="side-menu__link--active" (click)="close()">
+        <span>◷</span>
+        {{ languageService.language === "en" ? "Quiz History" : "クイズ履歴" }}
+      </a>
+      <a routerLink="/profile" routerLinkActive="side-menu__link--active" (click)="close()">
+        <span>◯</span>
+        {{ languageService.language === "en" ? "Profile" : "プロフィール" }}
+      </a>
+    </nav>
+
+    <button class="side-menu__logout" type="button" (click)="logout()">
+      <span>↪</span>
+      {{ languageService.language === "en" ? "Logout" : "ログアウト" }}
+    </button>
+  </aside>
+</ng-container>

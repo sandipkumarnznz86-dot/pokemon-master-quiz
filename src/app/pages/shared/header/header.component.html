@@ -1,0 +1,60 @@
+<nav class="topbar" aria-label="Main navigation">
+  <button
+    class="menu-toggle"
+    type="button"
+    aria-label="Open navigation menu"
+    (click)="toggleNavigation()"
+  >
+    <span></span><span></span><span></span>
+  </button>
+
+  <a class="brand" routerLink="/home" aria-label="POKÉQUIZ home">
+    <span class="brand__mark"></span>
+    <span>POKÉ<b>QUIZ</b></span>
+  </a>
+
+  <div class="topbar-actions">
+    <div class="language-switch" role="group" aria-label="Language">
+      <button
+        type="button"
+        [class.language-switch__active]="languageService.language === 'en'"
+        (click)="languageService.setLanguage('en')"
+      >
+        English
+      </button>
+      <button
+        type="button"
+        [class.language-switch__active]="languageService.language === 'ja'"
+        (click)="languageService.setLanguage('ja')"
+      >
+        日本語
+      </button>
+    </div>
+
+    <a
+      *ngIf="authService.user$ | async as user"
+      class="profile-shortcut"
+      routerLink="/profile"
+      [attr.aria-label]="
+        languageService.language === 'en'
+          ? 'Open profile for ' + user.name
+          : user.name + 'のプロフィールを開く'
+      "
+    >
+      <span class="avatar avatar--small">
+        <img *ngIf="user.photo" [src]="user.photo" [alt]="user.name" />
+        <span *ngIf="!user.photo">{{ getUserInitials(user.name) }}</span>
+      </span>
+      <span class="profile-shortcut__copy">
+        <strong>{{ user.name }}</strong>
+        <small>
+          {{
+            user.age === null
+              ? (languageService.language === "en" ? "Age not set" : "年齢未設定")
+              : user.age + (languageService.language === "en" ? " years old" : "歳")
+          }}
+        </small>
+      </span>
+    </a>
+  </div>
+</nav>

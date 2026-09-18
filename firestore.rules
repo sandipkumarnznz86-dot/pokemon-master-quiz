@@ -1,0 +1,49 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.uid == userId;
+
+      match /quizResults/{resultId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow create: if request.auth != null
+          && request.auth.uid == userId
+          && request.resource.data.uid == userId
+          && request.resource.data.gameMode in [
+            'knowledge',
+            'guess',
+            'type',
+            'who-am-i',
+            'speed'
+          ]
+          && request.resource.data.score is number
+          && request.resource.data.score >= 0
+          && request.resource.data.correctAnswers is number
+          && request.resource.data.correctAnswers >= 0
+          && request.resource.data.wrongAnswers is number
+          && request.resource.data.wrongAnswers >= 0
+          && request.resource.data.questionCount is number
+          && request.resource.data.questionCount >= 0
+          && request.resource.data.accuracy is number
+          && request.resource.data.accuracy >= 0
+          && request.resource.data.accuracy <= 100
+          && request.resource.data.bestStreak is number
+          && request.resource.data.bestStreak >= 0;
+        allow update, delete: if false;
+      }
+    }
+
+    // Password-reset records are server-only. Callable Functions use Admin SDK.
+    match /passwordResetTokens/{tokenId} {
+      allow read, write: if false;
+    }
+
+    match /passwordResetRateLimits/{rateId} {
+      allow read, write: if false;
+    }
+  }
+}

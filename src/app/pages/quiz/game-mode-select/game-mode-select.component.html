@@ -1,0 +1,21 @@
+<main class="mode-page">
+  <app-header></app-header>
+  <app-side-menu></app-side-menu>
+  <section class="mode-shell">
+    <p class="eyebrow">{{ languageService.language === 'en' ? 'POKÉQUIZ ARCADE' : 'ポケクイズ アーケード' }}</p>
+    <h1>{{ languageService.language === 'en' ? 'Choose your game' : 'ゲームを選択' }}</h1>
+    <p class="intro">{{ languageService.language === 'en' ? 'Five ways to test your Pokémon instincts.' : '5つのゲームでポケモンの知識を試そう。' }}</p>
+    <div class="mode-grid">
+      <article class="mode-card" *ngFor="let mode of modes">
+        <div class="mode-icon">{{ mode.icon }}</div>
+        <div class="mode-copy">
+          <span class="mode-difficulty">{{ mode.difficulty }}</span>
+          <h2>{{ languageService.language === 'en' ? mode.title : (mode.id === 'knowledge' ? 'ポケモン知識クイズ' : mode.id === 'guess' ? 'ポケモン当て' : mode.id === 'type' ? 'タイプチャレンジ' : mode.id === 'who-am-i' ? '私は誰？' : 'スピードバトル') }}</h2>
+          <p>{{ languageService.language === 'en' ? mode.description : (mode.id === 'knowledge' ? 'ポケモンの知識を試そう。' : mode.id === 'guess' ? '画像からポケモンを当てよう。' : mode.id === 'type' ? 'ポケモンのタイプを極めよう。' : mode.id === 'who-am-i' ? 'ヒントから答えを見つけよう。' : '60秒でできるだけ答えよう。') }}</p>
+          <button type="button" (click)="play(mode.id)">{{ languageService.language === 'en' ? 'Play now' : 'プレイする' }} <span>→</span></button>
+        </div>
+      </article>
+    </div>
+  </section>
+  <app-footer></app-footer>
+</main>

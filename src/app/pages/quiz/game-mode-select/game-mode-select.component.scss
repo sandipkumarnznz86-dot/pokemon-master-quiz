@@ -1,0 +1,17 @@
+.mode-page { min-height: 100vh; background: #f8fafc; color: #101828; }
+.mode-shell { max-width: 1180px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+.eyebrow { color: #2563eb; font-size: .75rem; font-weight: 800; letter-spacing: .14em; }
+h1 { margin: .5rem 0; font-size: clamp(2rem, 5vw, 4rem); }
+.intro { color: #64748b; margin-bottom: 2rem; }
+.mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+.mode-card { display: flex; gap: 1rem; min-height: 220px; padding: 1.4rem; border: 1px solid #e2e8f0; border-radius: 20px; background: #fff; box-shadow: 0 12px 30px rgba(16,24,40,.06); transition: transform .2s, box-shadow .2s; }
+.mode-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(37,99,235,.14); }
+.mode-icon { display: grid; place-items: center; flex: 0 0 48px; height: 48px; border-radius: 15px; background: linear-gradient(135deg,#2563eb,#6c5ce7); color: #fff; font-size: 1.4rem; }
+.mode-copy { display: flex; flex-direction: column; align-items: flex-start; }
+.mode-difficulty { color: #facc15; letter-spacing: .1em; }
+h2 { margin: .6rem 0 .35rem; font-size: 1.2rem; }
+.mode-copy p { min-height: 42px; margin: 0; color: #64748b; line-height: 1.5; }
+button { margin-top: auto; border: 0; border-radius: 10px; padding: .75rem 1rem; background: #2563eb; color: #fff; font-weight: 800; cursor: pointer; }
+button:hover { background: #172554; }
+button span { margin-left: .5rem; }
+@media (max-width: 600px) { .mode-shell { padding: 2rem 1rem 4rem; } .mode-card { min-height: 190px; } }
